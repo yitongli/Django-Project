@@ -1,0 +1,54 @@
+from django.shortcuts import render
+from django.http import HttpResponse,HttpResponseNotFound,HttpResponseRedirect
+from django.urls import reverse
+
+album_content = {
+    "1":"春光",
+    "2":"回心转意",
+    "3":"情雪",
+    "4":"结束的开始",
+    "5":"若没有你",
+    "6":"我的笑我的泪",
+    "7":"陌生的恋人",
+    "8":"Maybe I Love You",
+    "9":"爱死了",
+    "10":"春光（Acoustic Version）"
+
+
+}
+
+# Create your views here.
+def index(request):
+    list_items = ""
+    songs = list(album_content.keys())
+
+    for song in songs:
+        song_path = reverse("spring-song",args=[song])
+        list_items += f"<li><a href=\"{song_path}\"></a></li>"
+
+    #"<li><li>" create month list 
+    
+    response_data = f"<ul>{list_items}</ul>"
+    return HttpResponse(response_data)
+
+def songs_by_numbers(request,song):
+    songs_list = list(album_content.keys())
+    if song > len(songs_list):
+        return HttpResponseNotFound("this song is not supported!")
+
+    forward_song = songs_list[song-1]
+    #redirect function, convert int month to string month
+    redirect_path = reverse("spring-song",args=[forward_song]) #challenge/month
+    return HttpResponseRedirect(redirect_path)
+
+
+def spring_songs(request,song):
+    try:
+        songs_text = album_content[song]
+        response_data = f"<h1>{songs_text}</h1>"
+        return HttpResponse(response_data)
+    except:
+        return HttpResponseNotFound("<h1>this song is not supported!</h1>")
+
+def testone(request):
+    return HttpResponse("this works!")
